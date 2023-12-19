@@ -31,7 +31,7 @@ public class HelloController {
     @FXML private AnchorPane ap;
     @FXML private TextArea recipesTextArea;
     @FXML private TextArea recipeTextArea;
-    private Map<String, String> recipeMap = new HashMap<>();
+    private final Map<String, String> recipeMap = new HashMap<>();
     //Sätter olika strings för de apierna, detta gör det enklare att hämta senare
     private static final String FIREBASE_URL = "https://slutprojekt-8495f-default-rtdb.europe-west1.firebasedatabase.app/.json";
     private static final String API_KEY = "2da3e217a3f349d088a263038d50cef7";
@@ -39,8 +39,9 @@ public class HelloController {
 
     @FXML
     public void initialize() {
-        loadRecipesFirebase();
+        loadRecipesFirebase(); // Laddar alla recept från firebase i start av app
     }
+    //Lägger till alla sidor som dirigeras genom mousevents
     @FXML
     void page3(MouseEvent event) {
         loadPage("Recipe.fxml");
@@ -70,7 +71,7 @@ public class HelloController {
         }
     }
 
-    private void saveRecipe(String recipe) {
+    private void saveRecipe(String recipe) { //Skapar receptet till firebase
         HttpClient client = HttpClient.newHttpClient();
         Map<String, String> data = new HashMap<>();
         data.put("recipe", recipe);
@@ -93,7 +94,7 @@ public class HelloController {
         }
     }
 
-    @FXML
+    @FXML   //Hanterar sparfunktionen för knappen
     private void saveButton(ActionEvent event) {
         String recipeText = recipeTextArea.getText();
         if (!recipeText.isEmpty()) {
@@ -101,7 +102,7 @@ public class HelloController {
         }
     }
 
-    @FXML
+    @FXML   // Hämtar ett slumpmässigt recept från Spoonacular API
     private void getRandomRecipe(ActionEvent event) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -114,7 +115,7 @@ public class HelloController {
                 .join();
     }
 
-    private void processJson(String responseBody) {
+    private void processJson(String responseBody) { //Bearbetar Json filerna som kommer in från API:n
         try {
             JsonArray recipesArray = Json.parse(responseBody).asObject().get("recipes").asArray();
             if (!recipesArray.isEmpty()) {
@@ -125,12 +126,11 @@ public class HelloController {
                 Platform.runLater(() -> recipeTextArea.setText("Title: " + title + "\n\nInstructions:\n" + instructions));
             }
         } catch (Exception e) {
-            e.printStackTrace();
             Platform.runLater(() -> recipeTextArea.setText("Failed to load recipe."));
         }
     }
 
-    @FXML
+    @FXML   //Hämtar recept från firebase
     private void getRecipe(ActionEvent event) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
@@ -143,7 +143,7 @@ public class HelloController {
                 .thenAccept(this::showRecipes)
                 .join();
     }
-
+    // Visar de recepten som finns i firebase
     private void showRecipes(String responseBody) {
         try {
             JsonObject rootNode = Json.parse(responseBody).asObject();
@@ -157,21 +157,21 @@ public class HelloController {
             String finalRecipes = recipes.toString();
             Platform.runLater(() -> recipesTextArea.setText(finalRecipes.isEmpty() ? "No recipes found." : finalRecipes));
         } catch (Exception e) {
-            e.printStackTrace();
             Platform.runLater(() -> recipesTextArea.setText("Failed to fetch recipes."));
         }
     }
 
-    @FXML
+    @FXML //Hanterar att deletefunktionen på deleteknappen
     private void deleteRecipe(ActionEvent event) {
         String selectedTitle = recipeChoiceBox.getValue();
         if (selectedTitle != null && recipeMap.containsKey(selectedTitle)) {
             String selectedKey = recipeMap.get(selectedTitle);
             deleteRecipeFirebase(selectedKey);
         } else {
+            System.out.println("Failed");
         }
     }
-
+    // Tar bort recept från Firebase
     private void deleteRecipeFirebase(String recipeKey) {
         String deleteUrl = FIREBASE_URL.replace(".json", "/" + recipeKey + ".json");
         HttpClient client = HttpClient.newHttpClient();
@@ -180,10 +180,11 @@ public class HelloController {
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
                 .thenAccept(responseBody -> {
-                    loadRecipesFirebase();
+                    //Hanterar svaret från deletefunktionen
+                    loadRecipesFirebase(); //Laddar om recepten efter deleten
                 });
     }
-
+    // Laddar in recept från firebase och uppdaterar Choiceboxen
     private void loadRecipes(String responseBody) {
         try {
             JsonObject recipes = Json.parse(responseBody).asObject();
@@ -203,11 +204,10 @@ public class HelloController {
                 }
             });
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println("Error parsing recipe data: " + e.getMessage());
         }
     }
-
+    //Hämtar titeln från recepten
     private String titleExtraction(String fullRecipeText) {
         int endIndex = fullRecipeText.indexOf("\n\nInstructions:\n");
         if (endIndex != -1) {
@@ -216,6 +216,7 @@ public class HelloController {
             return "Unnamed Recipe";
         }
     }
+    //Laddar recept från Firebase
     private void loadRecipesFirebase() {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(FIREBASE_URL)).GET().build();
