@@ -27,7 +27,6 @@ public class HelloController {
     public Button saveButton;
     public Button getRecipe;
     @FXML private ChoiceBox<String> recipeChoiceBox;
-    @FXML private Button deleteRecipeButton;
     @FXML private AnchorPane ap;
     @FXML private TextArea recipesTextArea;
     @FXML private TextArea recipeTextArea;
@@ -80,7 +79,7 @@ public class HelloController {
             JsonObject json = new JsonObject();
             data.forEach(json::add);
 
-            HttpRequest request = HttpRequest.newBuilder()
+            HttpRequest request = HttpRequest.newBuilder() //Skickar informationen till firebase genom HTTPrequest
                     .uri(URI.create(FIREBASE_URL))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(json.toString()))
@@ -98,7 +97,7 @@ public class HelloController {
     private void saveButton(ActionEvent event) {
         String recipeText = recipeTextArea.getText();
         if (!recipeText.isEmpty()) {
-            saveRecipe(recipeText);
+            saveRecipe(recipeText); //Hämtar receptet från textarean och sparar den
         }
     }
 
@@ -106,9 +105,9 @@ public class HelloController {
     private void getRandomRecipe(ActionEvent event) {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(RANDOM_RECIPE_URL))
+                .uri(URI.create(RANDOM_RECIPE_URL)) //Hämtar ett recept genom url Stringen
                 .build();
-
+            //Processar Json-filen med processJson
         client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
                 .thenApply(HttpResponse::body)
                 .thenAccept(this::processJson)
@@ -122,7 +121,7 @@ public class HelloController {
                 JsonObject recipe = recipesArray.get(0).asObject();
                 String title = recipe.get("title").asString();
                 String instructions = recipe.get("instructions").asString();
-
+                //Uppdaterar textarean och gör att texten fungerar med det hämtade informationen i jsonfilerna
                 Platform.runLater(() -> recipeTextArea.setText("Title: " + title + "\n\nInstructions:\n" + instructions));
             }
         } catch (Exception e) {
@@ -156,17 +155,17 @@ public class HelloController {
 
             String finalRecipes = recipes.toString();
             Platform.runLater(() -> recipesTextArea.setText(finalRecipes.isEmpty() ? "No recipes found." : finalRecipes));
-        } catch (Exception e) {
+        } catch (Exception e) { //Felkod vid error
             Platform.runLater(() -> recipesTextArea.setText("Failed to fetch recipes."));
         }
     }
 
     @FXML //Hanterar att deletefunktionen på deleteknappen
-    private void deleteRecipe(ActionEvent event) {
+    private void deleteRecipe(ActionEvent event) { //Hämtar valt recept från Choiceboxen och raderar det.
         String selectedTitle = recipeChoiceBox.getValue();
         if (selectedTitle != null && recipeMap.containsKey(selectedTitle)) {
             String selectedKey = recipeMap.get(selectedTitle);
-            deleteRecipeFirebase(selectedKey);
+            deleteRecipeFirebase(selectedKey); //Det som gör att det raderas från firebase
         } else {
             System.out.println("Failed");
         }
@@ -196,7 +195,7 @@ public class HelloController {
                     JsonObject recipeObj = member.getValue().asObject();
                     String fullRecipeText = recipeObj.getString("recipe", "");
 
-                    // Getting the recipetitle from the whole text
+                    // Hämtar recepttiteln genom extraction funktionen
                     String recipeTitle = titleExtraction(fullRecipeText);
 
                     recipeMap.put(recipeTitle, recipeKey);
@@ -208,7 +207,7 @@ public class HelloController {
         }
     }
     //Hämtar titeln från recepten
-    private String titleExtraction(String fullRecipeText) {
+    private String titleExtraction(String fullRecipeText) { //Används för att få choicebox till att fungera
         int endIndex = fullRecipeText.indexOf("\n\nInstructions:\n");
         if (endIndex != -1) {
             return fullRecipeText.substring(0, endIndex);

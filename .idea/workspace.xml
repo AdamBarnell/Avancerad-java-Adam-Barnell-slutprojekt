@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0291478d-491f-4b36-86c1-039e03cb2d2c" name="Changes" comment="Update">
+    <list default="true" id="0291478d-491f-4b36-86c1-039e03cb2d2c" name="Changes" comment="Update comments">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/avanceradjavaadambarnellslutprojekt/HelloController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/avanceradjavaadambarnellslutprojekt/HelloController.java" afterDir="false" />
     </list>
@@ -92,12 +92,20 @@
       <option name="presentableId" value="LOCAL−00003" />
       <updated>1702911521714</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL−00004" summary="Update">
+      <option name="closed" value="true" />
+      <created>1702968059994</created>
+      <option name="number" value="LOCAL−00004" />
+      <option name="presentableId" value="LOCAL−00004" />
+      <updated>1702968059994</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="Update" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update" />
+    <MESSAGE value="Update comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update comments" />
   </component>
 </project>
