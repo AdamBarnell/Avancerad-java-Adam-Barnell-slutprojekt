@@ -148,7 +148,6 @@ public class HelloController {
             JsonObject rootNode = Json.parse(responseBody).asObject();
             StringBuilder recipes = new StringBuilder();
             for (JsonObject.Member entry : rootNode) {
-                String key = entry.getName();
                 String recipe = entry.getValue().asObject().getString("recipe", "");
                 recipes.append("\nRecipe: ").append(recipe).append("\n\n");
             }
